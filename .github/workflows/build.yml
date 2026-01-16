@@ -52,6 +52,26 @@ jobs:
       - name: Build
         run: wails build -clean
       
+      - name: Create DMG (macOS)
+        if: matrix.platform == 'macos'
+        run: |
+          # Install create-dmg
+          brew install create-dmg
+          
+          # Create DMG from .app bundle
+          create-dmg \
+            --volname "HyPrism" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --app-drop-link 425 120 \
+            "HyPrism-macOS-arm64.dmg" \
+            "build/bin/HyPrism.app"
+          
+          # Replace .app with DMG
+          rm -rf build/bin/*
+          mv HyPrism-macOS-arm64.dmg build/bin/
+      
       - name: Create AppImage (Linux)
         if: matrix.platform == 'linux'
         run: |
